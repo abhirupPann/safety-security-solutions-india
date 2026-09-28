@@ -142,7 +142,9 @@ function Motion({ children, className='', delay=0 }) {
 
 function Layout({ children }) {
   const location = useLocation();
-  useEffect(() => window.scrollTo({ top: 0, behavior: 'auto' }), [location.pathname]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [location.pathname]);
   return <div><Header/>{children}<QuoteBand/><Footer/><FloatingTools/></div>;
 }
 
