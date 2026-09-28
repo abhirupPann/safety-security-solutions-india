@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+ import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -29,8 +29,10 @@ const verifiedClientMarks = {
   'Albert David Ltd.': 'https://albertdavidindia.com/images/logo.png',
   'Siddha Real Estate': 'https://siddhagroup.com/images/siddha-group-logo.png',
   'Indian Space Research Organisation': 'https://www.presentations.gov.in/wp-content/uploads/2020/06/ISRO-Mock.png',
-  'AFCONS': 'https://companieslogo.com/img/orig/AFCONS.NS-03c0d2ac.png?t=1733636257',
-  'IITD (JV)': 'https://home.iitd.ac.in/images/logo-diamond.png'
+  'ETA Engineering Private Limited': 'https://www.eta-engg.com/images/ETA-Engineering-Logo.png',
+  'ANJ Turnkey Projects PVT. LTD': 'https://www.anj.co.in/logos/brand.png',
+  'The Future Foundation School': 'https://sriaurobindoschools.org/tffs/wp-content/uploads/2023/11/tffs-logo.png',
+  'GKW Limited': 'https://www.gkwltd.com/wp-content/uploads/2022/05/GKW-logo.jpg'
 };
 
 function MediaFrame({src,alt,className=''}) {
@@ -147,13 +149,17 @@ function MotionPage({ children }) {
 }
 
 function Layout({ children }) {
-  return <div><Header/><MotionPage>{children}</MotionPage><Footer/><FloatingTools/></div>;
+  return <div><Header/><MotionPage>{children}</MotionPage><SafetyQuote/><Footer/><FloatingTools/></div>;
 }
+
+function SafetyQuote(){return <section className='quote-band global-quote'><div><div className='eyebrow'>SAFETY PHILOSOPHY</div><blockquote>An ounce of prevention is worth a pound of cure.</blockquote><small>- Benjamin Franklin, 1735 · Fire-prevention maxim</small></div><ShieldCheck size={72}/></section>}
+
+
 
 function PageHero({ eyebrow, title, text, image=imagery.facility, imageAlt='Fire safety engineering at an industrial facility' }) {
   return <section className='page-hero'>
     <div><div className='eyebrow'><span/> {eyebrow}</div><h1>{title}</h1><p>{text}</p></div>
-    <div className='page-hero-art'><MediaFrame src={image} alt={imageAlt} className='page-hero-photo'/><div className='grid'/><div className='page-art-card'><ShieldCheck size={42}/><small>SAFETY &amp; SECURITY</small><strong>Engineered around the risk.</strong></div></div>
+    <div className='page-hero-art'><ProtectionScene className='page-3d' /><MediaFrame src={image} alt={imageAlt} className='page-hero-photo'/><div className='grid'/><div className='page-art-card'><ShieldCheck size={42}/><small>SAFETY &amp; SECURITY</small><strong>Engineered around the risk.</strong></div></div>
   </section>;
 }
 
@@ -171,7 +177,6 @@ function Home() {
     <div className='trust'><span>ENGINEERED FOR FACILITIES</span><i/><span>FIRE - LIFE - ASSET PROTECTION</span><i/><span>TECHNICAL SUPPORT</span></div>
     <section className='section'><div className='section-head'><div><div className='eyebrow dark'>01 - SERVICES DIRECTORY</div><h2>A complete fire-safety stack.</h2></div><p>From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.</p></div><div className='service-grid motion-stagger'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.detection:s.title==='Protection Systems'?imagery.sprinkler:imagery.passive} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
     <section className='section dark-section'><div className='section-head'><div><div className='eyebrow'>02 - EQUIPMENT / SYSTEMS</div><h2>Specify the right system for the risk.</h2></div><p>Explore the solution families covered by the company profile. Product-level specifications can be added as the catalog is finalized.</p></div><div className='system-feature'><ProtectionScene className='system-3d' /><MediaFrame src={imagery.sprinkler} alt='Industrial fire sprinkler protection system'/><div><div className='eyebrow'>ENGINEERED PROTECTION</div><h3>Active systems designed around the facility.</h3><p>From detection and alarm through water-based and clean-agent protection, the system choice follows the risk and operational requirement.</p></div></div><div className='system-list motion-stagger'>{systems.map((s,i)=><Link to='/systems' className='system' key={s}><span>{String(i+1).padStart(2,'0')}</span><b>{s}</b><ChevronRight size={17}/></Link>)}</div></section>
-    <section className='quote-band'><div><div className='eyebrow'>SAFETY PHILOSOPHY</div><blockquote>An ounce of prevention is worth a pound of cure.</blockquote><small>- Benjamin Franklin, 1735 · Fire-prevention maxim</small></div><ShieldCheck size={72}/></section>
     <section className='section'><div className='section-head'><div><div className='eyebrow dark'>03 - SAFETY RESOURCES</div><h2>Useful knowledge for facility teams.</h2></div><p>Educational content can turn routine maintenance into a stronger safety practice.</p></div><div className='resource-grid motion-stagger'>{resources.map(([t,p],i)=><article className='resource' key={t}><div className='resource-no'>0{i+1}</div><BookOpen size={21}/><h3>{t}</h3><p>{p}</p><Link to='/resources'>Explore resource <ArrowRight size={15}/></Link></article>)}</div></section>
     <section className='section cta-section'><div><div className='eyebrow dark'>READY WHEN YOU ARE</div><h2>Turn your requirement into a clear scope.</h2><p>Share your facility need and route it directly to the company for a consultation.</p></div><Link className='primary' to='/quote'>Request a Quote <ArrowRight size={17}/></Link></section>
   </main>;
@@ -199,7 +204,6 @@ function Clients() {
   return <main><PageHero eyebrow='03 - CLIENT PORTFOLIO' title='Trusted across varied facilities.' text='Client names reproduced from the supplied company profile. Logos are omitted where they have not been verified.' image={imagery.facility} imageAlt='Fire protection engineering inspection in an industrial facility'/>
     <section className='section'><div className='client-grid client-grid-large'>{clients.map((c,i)=><div className='client' key={c}><ClientMark name={c}/><span>{String(i+1).padStart(2,'0')}</span><b>{c}</b></div>)}</div></section>
      <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>PROJECT ENVIRONMENTS</div><h2>Safety engineering across different facility types.</h2></div><p>The supplied client list spans healthcare, infrastructure, education, industrial and commercial environments.</p></div><ImageGallery items={[{src:imagery.facility,alt:'Industrial facility fire protection inspection'},{src:imagery.sprinkler,alt:'Industrial fire sprinkler installation'},{src:imagery.inspection,alt:'Engineer inspecting fire protection controls'}]}/></section>
-    <section className='quote-band'><div><div className='eyebrow'>SAFETY PHILOSOPHY</div><blockquote>An ounce of prevention is worth a pound of cure.</blockquote><small>- Benjamin Franklin, 1735 · Fire-prevention maxim</small></div><ShieldCheck size={72}/></section>
   </main>;
 }
 
