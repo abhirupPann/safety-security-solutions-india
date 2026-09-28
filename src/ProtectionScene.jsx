@@ -132,28 +132,60 @@ export default function ProtectionScene({ className = '', variant = 'facility' }
 
       raf = requestAnimationFrame(animate);
 
-      return () => {
+      const cleanup = () => {
         stopped = true;
         cancelAnimationFrame(raf);
         resizeObserver?.disconnect();
         visibilityObserver?.disconnect();
         window.removeEventListener('resize', onResize);
+
+        const canvas = renderer?.domElement;
         try {
-          if (renderer?.domElement?.parentNode === mount) mount.removeChild(renderer.domElement);
+          if (canvas?.parentNode === mount) mount.removeChild(canvas);
         } catch {}
-        shell.geometry.dispose();
-        core.geometry.dispose();
-        floor.geometry.dispose();
-        pipeGeo.dispose();
-        nodeGeo.dispose();
-        metal.dispose();
-        glow.dispose();
-        soft.dispose();
-        pipeMat.dispose();
-        nodeMat.dispose();
-        rings.forEach((ring) => ring.material.dispose());
-        renderer?.dispose();
+
+        // Do not tear down WebGL resources in the middle of React's route
+        // transition. Remove the canvas immediately, then release GPU state
+        // in a microtask so the next route can mount its scene safely.
+        const release = () => {
+          const dispose = (resource) => {
+            try {
+              if (resource && typeof resource.dispose === 'function') resource.dispose();
+            } catch (error) {
+              console.warn('3D resource cleanup skipped:', error);
+            }
+          };
+
+          dispose(shell.geometry);
+          dispose(core.geometry);
+          dispose(floor.geometry);
+          dispose(pipeGeo);
+          dispose(nodeGeo);
+          dispose(metal);
+          dispose(glow);
+          dispose(soft);
+          dispose(pipeMat);
+          dispose(nodeMat);
+          rings.forEach((ring) => dispose(ring.material));
+
+          try {
+            if (renderer && typeof renderer.dispose === 'function') renderer.dispose();
+          } catch (error) {
+            console.warn('3D renderer cleanup skipped:', error);
+          }
+
+          try {
+            if (renderer && typeof renderer.forceContextLoss === 'function') renderer.forceContextLoss();
+          } catch (error) {
+            console.warn('3D context cleanup skipped:', error);
+          }
+        };
+
+        if (typeof queueMicrotask === 'function') queueMicrotask(release);
+        else setTimeout(release, 0);
       };
+
+      return cleanup;
     } catch (error) {
       console.warn('3D scene unavailable; continuing with the page UI:', error);
       setFallback();
@@ -162,7 +194,14 @@ export default function ProtectionScene({ className = '', variant = 'facility' }
         cancelAnimationFrame(raf);
         resizeObserver?.disconnect();
         visibilityObserver?.disconnect();
-        if (renderer?.domElement?.parentNode === mount) mount.removeChild(renderer.domElement);
+        try {
+          if (renderer?.domElement?.parentNode === mount) mount.removeChild(renderer.domElement);
+        } catch {}
+        try {
+          if (renderer && typeof renderer.dispose === 'function') renderer.dispose();
+        } catch (error) {
+          console.warn('3D fallback cleanup skipped:', error);
+        }
       };
     }
   }, [variant]);
