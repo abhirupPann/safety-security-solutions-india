@@ -142,7 +142,7 @@ function Motion({ children, className='', delay=0 }) {
 
 function MotionPage({ children }) {
   const location = useLocation();
-  useEffect(() => window.scrollTo({ top: 0, behavior: 'instant' }), [location.pathname]);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }); }, [location.pathname]);
   return <div className='route-motion'>{children}</div>;
 }
 
