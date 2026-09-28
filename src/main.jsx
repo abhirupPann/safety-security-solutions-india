@@ -21,7 +21,7 @@ const imagery = {
   detectionWide: 'https://americanalarm.net/wp-content/uploads/2026/01/understanding-the-critical-differences-commercial-fire-alarm-systems-vs.-residential-alarms-1030x562.jpg',
   sprinkler: 'https://www.fireline.com/wp-content/uploads/2025/03/fireline-designing-fire-protection-systems-industrial-facilities.jpg',
   passive: 'https://images.squarespace-cdn.com/content/v1/55c9748de4b04eba92967c83/1541303155409-IW18K7KK5Q6T44XRGH6X/Fig1-passive-fire-protection.jpg',
-  inspection: 'https://www.fireline.com/wp-content/uploads/2024/09/fireline-fire-protection-system-inspection.jpg',
+  inspection: 'https://www.fireline.com/wp-content/uploads/2025/03/fireline-designing-fire-protection-systems-industrial-facilities.jpg',
   facility: 'https://www.envistaforensics.com/media/15ibn4u4/fire-protection-engineer-analyzing-machinery.jpeg?anchor=center&mode=crop&width=1400&height=850&rnd=132713030943270000&format=webp&quality=82'
 };
 
