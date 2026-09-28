@@ -16,9 +16,12 @@ const address = '27, Nityananda Nagar, P.O. D.S. Lane, Howrah - 711109';
 
 const imagery = {
   hero: 'https://kordfire.com/wp-content/uploads/2026/04/fire-protection-systems-for-industrial-facilities_featured.webp',
-  alarm: 'https://firealarm.com/wp-content/uploads/2025/07/Fire-Alarm-Control-Panel-Basics-1637x1080-1.jpg',
-  sprinkler: 'https://fluidflowinfo.com/wp-content/uploads/2024/09/Fire-Sprinkler-Systems-Technical-Paper-FluidFlow.jpg',
-  inspection: 'https://www.envistaforensics.com/media/15ibn4u4/fire-protection-engineer-analyzing-machinery.jpeg?anchor=center&mode=crop&width=1200&height=700&rnd=132713030943270000&format=webp&quality=82'
+  detection: 'https://honeywell.scene7.com/is/image/Honeywell65/hbt-Security-P1907343-primaryimage',
+  detectionWide: 'https://americanalarm.net/wp-content/uploads/2026/01/understanding-the-critical-differences-commercial-fire-alarm-systems-vs.-residential-alarms-1030x562.jpg',
+  sprinkler: 'https://www.fireline.com/wp-content/uploads/2025/03/fireline-designing-fire-protection-systems-industrial-facilities.jpg',
+  passive: 'https://images.squarespace-cdn.com/content/v1/55c9748de4b04eba92967c83/1541303155409-IW18K7KK5Q6T44XRGH6X/Fig1-passive-fire-protection.jpg',
+  inspection: 'https://dgconsultants.co.in/wp-content/uploads/2025/03/engineer-checking-industrial-fire-control-system-scaled.jpg',
+  facility: 'https://www.envistaforensics.com/media/15ibn4u4/fire-protection-engineer-analyzing-machinery.jpeg?anchor=center&mode=crop&width=1400&height=850&rnd=132713030943270000&format=webp&quality=82'
 };
 
 const verifiedClientMarks = {
@@ -30,7 +33,11 @@ const verifiedClientMarks = {
 };
 
 function MediaFrame({src,alt,className=''}) {
-  return <div className={`media-frame ${className}`}><img src={src} alt={alt} loading="lazy" onError={e=>{e.currentTarget.parentElement.style.display='none'}}/></div>;
+  return <div className={`media-frame ${className}`}><img src={src} alt={alt} loading="lazy" decoding="async" onError={e=>{e.currentTarget.parentElement.style.display='none'}}/></div>;
+}
+
+function ImageGallery({items}) {
+  return <div className='image-gallery'>{items.map((item,i)=><MediaFrame key={item.src} src={item.src} alt={item.alt} className={`gallery-image gallery-${i+1}`}/>)}</div>;
 }
 
 function ClientMark({name}) {
@@ -115,10 +122,10 @@ function Layout({ children }) {
   return <div><Header/>{children}<Footer/><FloatingTools/></div>;
 }
 
-function PageHero({ eyebrow, title, text }) {
+function PageHero({ eyebrow, title, text, image=imagery.facility, imageAlt='Fire safety engineering at an industrial facility' }) {
   return <section className='page-hero'>
     <div><div className='eyebrow'><span/> {eyebrow}</div><h1>{title}</h1><p>{text}</p></div>
-    <div className='page-hero-art'><div className='grid'/><div className='page-art-card'><ShieldCheck size={42}/><small>SAFETY &amp; SECURITY</small><strong>Engineered around the risk.</strong></div></div>
+    <div className='page-hero-art'><MediaFrame src={image} alt={imageAlt} className='page-hero-photo'/><div className='grid'/><div className='page-art-card'><ShieldCheck size={42}/><small>SAFETY &amp; SECURITY</small><strong>Engineered around the risk.</strong></div></div>
   </section>;
 }
 
@@ -134,8 +141,8 @@ function Home() {
       <div className='hero-art'><MediaFrame src={imagery.hero} alt='Industrial fire protection systems' className='hero-photo'/><div className='grid'/><div className='art-card main'><div className='pulse'><span/></div><small>PROTECTION STACK</small><strong>Detect - Protect - Preserve</strong><p>Systems engineered around the risk, facility and response requirement.</p></div><div className='art-card mini one'>24/7<br/><b>Support</b></div><div className='art-card mini two'>10+<br/><b>System types</b></div></div>
     </section>
     <div className='trust'><span>ENGINEERED FOR FACILITIES</span><i/><span>FIRE - LIFE - ASSET PROTECTION</span><i/><span>TECHNICAL SUPPORT</span></div>
-    <section className='section'><div className='section-head'><div><div className='eyebrow dark'>01 - SERVICES DIRECTORY</div><h2>A complete fire-safety stack.</h2></div><p>From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.</p></div><div className='service-grid'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.alarm:s.title==='Protection Systems'?imagery.sprinkler:imagery.inspection} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
-    <section className='section dark-section'><div className='section-head'><div><div className='eyebrow'>02 - EQUIPMENT / SYSTEMS</div><h2>Specify the right system for the risk.</h2></div><p>Explore the solution families covered by the company profile. Product-level specifications can be added as the catalog is finalized.</p></div><div className='system-feature'><MediaFrame src={imagery.sprinkler} alt='Fire sprinkler protection system'/><div><div className='eyebrow'>ENGINEERED PROTECTION</div><h3>Active systems designed around the facility.</h3><p>From detection and alarm through water-based and clean-agent protection, the system choice follows the risk and operational requirement.</p></div></div><div className='system-list'>{systems.map((s,i)=><Link to='/systems' className='system' key={s}><span>{String(i+1).padStart(2,'0')}</span><b>{s}</b><ChevronRight size={17}/></Link>)}</div></section>
+    <section className='section'><div className='section-head'><div><div className='eyebrow dark'>01 - SERVICES DIRECTORY</div><h2>A complete fire-safety stack.</h2></div><p>From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.</p></div><div className='service-grid'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.detection:s.title==='Protection Systems'?imagery.sprinkler:imagery.passive} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
+    <section className='section dark-section'><div className='section-head'><div><div className='eyebrow'>02 - EQUIPMENT / SYSTEMS</div><h2>Specify the right system for the risk.</h2></div><p>Explore the solution families covered by the company profile. Product-level specifications can be added as the catalog is finalized.</p></div><div className='system-feature'><MediaFrame src={imagery.sprinkler} alt='Industrial fire sprinkler protection system'/><div><div className='eyebrow'>ENGINEERED PROTECTION</div><h3>Active systems designed around the facility.</h3><p>From detection and alarm through water-based and clean-agent protection, the system choice follows the risk and operational requirement.</p></div></div><div className='system-list'>{systems.map((s,i)=><Link to='/systems' className='system' key={s}><span>{String(i+1).padStart(2,'0')}</span><b>{s}</b><ChevronRight size={17}/></Link>)}</div></section>
     <section className='quote-band'><div><div className='eyebrow'>SAFETY PHILOSOPHY</div><blockquote>The safety of the people shall be the highest law.</blockquote><small>- Marcus Tullius Cicero, commonly translated</small></div><ShieldCheck size={72}/></section>
     <section className='section'><div className='section-head'><div><div className='eyebrow dark'>03 - SAFETY RESOURCES</div><h2>Useful knowledge for facility teams.</h2></div><p>Educational content can turn routine maintenance into a stronger safety practice.</p></div><div className='resource-grid'>{resources.map(([t,p],i)=><article className='resource' key={t}><div className='resource-no'>0{i+1}</div><BookOpen size={21}/><h3>{t}</h3><p>{p}</p><Link to='/resources'>Explore resource <ArrowRight size={15}/></Link></article>)}</div></section>
     <section className='section cta-section'><div><div className='eyebrow dark'>READY WHEN YOU ARE</div><h2>Turn your requirement into a clear scope.</h2><p>Share your facility need and route it directly to the company for a consultation.</p></div><Link className='primary' to='/quote'>Request a Quote <ArrowRight size={17}/></Link></section>
@@ -143,36 +150,41 @@ function Home() {
 }
 
 function Services() {
-  return <main><PageHero eyebrow='01 - SERVICES DIRECTORY' title='A complete fire-safety stack.' text='From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.'/>
-    <section className='section'><div className='service-grid service-grid-large'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.alarm:s.title==='Protection Systems'?imagery.sprinkler:imagery.inspection} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
+  return <main><PageHero eyebrow='01 - SERVICES DIRECTORY' title='A complete fire-safety stack.' text='From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.' image={imagery.detectionWide} imageAlt='Commercial fire alarm and detection system'/>
+    <section className='section'><div className='service-grid service-grid-large'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.detection:s.title==='Protection Systems'?imagery.sprinkler:imagery.passive} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
+     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>FIELD WORK</div><h2>Real systems. Real environments.</h2></div><p>Detection, protection and passive fire-safety visuals are used throughout the site so each service has a clear physical reference.</p></div><ImageGallery items={[{src:imagery.detectionWide,alt:'Commercial fire alarm control and detection system'},{src:imagery.sprinkler,alt:'Industrial fire sprinkler protection system'},{src:imagery.inspection,alt:'Engineer inspecting an industrial fire control system'}]}/></section>
     <section className='section dark-section'><div className='section-head'><div><div className='eyebrow'>ENGINEERING APPROACH</div><h2>Built around the facility, not a template.</h2></div><p>Requirements can be discussed around detection, protection, passive fire safety, AMC support and site-specific consultation.</p></div><div className='feature-grid'><Feature icon={ClipboardCheck} title='Assessment' text='Understand the facility, risk profile and operational requirements.'/><Feature icon={Wrench} title='System planning' text='Translate the requirement into a practical system scope.'/><Feature icon={Headphones} title='Technical support' text='Maintain a direct route for service and support conversations.'/></div></section>
-    <section className='section'><CTA/></section>
+    <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>FIELD SUPPORT</div><h2>Built for facilities that need a direct response.</h2></div><p>From detection to protection and inspection, the support route stays close to the physical systems on site.</p></div><ImageGallery items={[{src:imagery.facility,alt:'Industrial fire protection facility'},{src:imagery.detectionWide,alt:'Fire alarm detection system'},{src:imagery.inspection,alt:'Fire safety engineer inspection'}]}/></section>
+     <section className='section'><CTA/></section>
   </main>;
 }
 
 function Systems() {
-  return <main><PageHero eyebrow='02 - EQUIPMENT / SYSTEMS' title='Specify the right system for the risk.' text='Explore the solution families covered by the supplied company profile. Product-level specifications can be added as the catalog is finalized.'/>
+  return <main><PageHero eyebrow='02 - EQUIPMENT / SYSTEMS' title='Specify the right system for the risk.' text='Explore the solution families covered by the supplied company profile. Product-level specifications can be added as the catalog is finalized.' image={imagery.sprinkler} imageAlt='Industrial fire sprinkler protection system'/>
     <section className='section dark-section'><div className='system-list system-list-large'>{systems.map((s,i)=><Link className='system' to='/quote' key={s}><span>{String(i+1).padStart(2,'0')}</span><b>{s}</b><ChevronRight size={17}/></Link>)}</div></section>
+     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>SYSTEM REFERENCES</div><h2>Visual references for the major system families.</h2></div><p>Use these visuals as context while product-level specifications are finalized.</p></div><ImageGallery items={[{src:imagery.detection,alt:'Fire detection smoke detector'},{src:imagery.sprinkler,alt:'Fire sprinkler and suppression system'},{src:imagery.passive,alt:'Passive fire protection and fire stopping'}]}/></section>
     <section className='section'><div className='section-head'><div><div className='eyebrow dark'>CATALOG DIRECTION</div><h2>System families first. Product specifications next.</h2></div><p>The current profile establishes solution categories. Detailed product-level specifications should be added from the finalized product catalog rather than assumed.</p></div><CTA/></section>
   </main>;
 }
 
 function Clients() {
-  return <main><PageHero eyebrow='03 - CLIENT PORTFOLIO' title='Trusted across varied facilities.' text='Client names reproduced from the supplied company profile. Logos are omitted where they have not been verified.'/>
+  return <main><PageHero eyebrow='03 - CLIENT PORTFOLIO' title='Trusted across varied facilities.' text='Client names reproduced from the supplied company profile. Logos are omitted where they have not been verified.' image={imagery.facility} imageAlt='Fire protection engineering inspection in an industrial facility'/>
     <section className='section'><div className='client-grid client-grid-large'>{clients.map((c,i)=><div className='client' key={c}><ClientMark name={c}/><span>{String(i+1).padStart(2,'0')}</span><b>{c}</b></div>)}</div></section>
+     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>PROJECT ENVIRONMENTS</div><h2>Safety engineering across different facility types.</h2></div><p>The supplied client list spans healthcare, infrastructure, education, industrial and commercial environments.</p></div><ImageGallery items={[{src:imagery.facility,alt:'Industrial facility fire protection inspection'},{src:imagery.sprinkler,alt:'Industrial fire sprinkler installation'},{src:imagery.inspection,alt:'Engineer inspecting fire protection controls'}]}/></section>
     <section className='quote-band'><div><div className='eyebrow'>SAFETY PHILOSOPHY</div><blockquote>The safety of the people shall be the highest law.</blockquote><small>- Marcus Tullius Cicero, commonly translated</small></div><ShieldCheck size={72}/></section>
   </main>;
 }
 
 function Resources() {
-  return <main><PageHero eyebrow='04 - SAFETY RESOURCES' title='Useful knowledge for facility teams.' text='Educational content can turn routine maintenance into a stronger safety practice.'/>
+  return <main><PageHero eyebrow='04 - SAFETY RESOURCES' title='Useful knowledge for facility teams.' text='Educational content can turn routine maintenance into a stronger safety practice.' image={imagery.inspection} imageAlt='Fire safety engineer inspecting an industrial control system'/>
     <section className='section'><div className='resource-grid resource-grid-large'>{resources.map(([t,p],i)=><article className='resource' key={t}><div className='resource-no'>0{i+1}</div><BookOpen size={21}/><h3>{t}</h3><p>{p}</p><Link to='/contact'>Discuss this topic <ArrowRight size={15}/></Link></article>)}</div></section>
+     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>VISUAL LEARNING</div><h2>See the systems behind the guidance.</h2></div><p>Use the imagery as a quick visual reference before diving into maintenance, detection and protection topics.</p></div><ImageGallery items={[{src:imagery.detectionWide,alt:'Commercial fire detection system'},{src:imagery.passive,alt:'Passive fire protection installation'},{src:imagery.inspection,alt:'Fire safety engineer inspection'}]}/></section>
     <section className='section dark-section'><div className='feature-grid'><Feature icon={FileText} title='Maintenance records' text='A future-ready client area for maintenance logs and service history.'/><Feature icon={ClipboardCheck} title='Audit reports' text='A structured destination for reports and facility documentation.'/><Feature icon={ShieldCheck} title='Safety practice' text='Turn recurring service conversations into a stronger safety routine.'/></div></section>
   </main>;
 }
 
 function About() {
-  return <main><PageHero eyebrow='05 - COMPANY PROFILE' title='Engineering experience, backed by practical support.' text='Incorporated in 2015, the supplied company profile emphasizes innovation, latest technology, quality products, technical support, cost-effective customization and well-trained professionals.'/>
+  return <main><PageHero eyebrow='05 - COMPANY PROFILE' title='Engineering experience, backed by practical support.' text='Incorporated in 2015, the supplied company profile emphasizes innovation, latest technology, quality products, technical support, cost-effective customization and well-trained professionals.' image={imagery.inspection} imageAlt='Fire safety engineer working on industrial protection equipment'/>
     <section className='section about'><div className='about-grid'><div><div className='eyebrow dark'>COMPANY PROFILE</div><h2>Focused on fire, life and asset protection.</h2><p>Incorporated in 2015, the supplied profile describes a company built around innovation, technology, quality products, technical support, customization and trained professionals.</p><div className='pill-row'><span>Innovation</span><span>Technology</span><span>Technical Support</span><span>Customization</span></div></div><div className='about-card'><Building2 size={26}/><b>India-wide service reach</b><p>Head office:</p><span>{address}</span><Link to='/contact'>Get directions <ArrowRight size={15}/></Link></div></div></section>
     <section className='section'><div className='section-head'><div><div className='eyebrow dark'>CLIENT PORTAL</div><h2>Maintenance records, organized.</h2></div><p>A future-ready client area for maintenance logs, service history and audit reports.</p></div><div className='portal'><div><b>Portal access can be scoped around client requirements.</b><p>Use the contact route to discuss how records and reports should be handled.</p></div><Link className='outline' to='/contact'>Ask about portal access <ArrowRight size={16}/></Link></div></section>
   </main>;
@@ -184,16 +196,17 @@ function Quote() {
   const update=e=>setF({...f,[e.target.name]:e.target.value});
   const submit=e=>{e.preventDefault();setSent(true);const t=`Hello Safety & Security Solutions, I need a quotation.\nName: ${f.name}\nCompany: ${f.company}\nPhone: ${f.phone}\nEmail: ${f.email}\nRequirement: ${f.need}\nDetails: ${f.message}`;window.open(`${wa}?text=${encodeURIComponent(t)}`,'_blank');};
   const mail=`mailto:${email}?subject=Safety%20%26%20Security%20Solutions%20Consultation`;
-  return <main><PageHero eyebrow='06 - REQUEST A QUOTE / CONSULTATION' title='Tell us what your facility needs.' text='Choose the requirement, add a few details and send the enquiry directly to the company on WhatsApp or by email.'/>
+  return <main><PageHero eyebrow='06 - REQUEST A QUOTE / CONSULTATION' title='Tell us what your facility needs.' text='Choose the requirement, add a few details and send the enquiry directly to the company on WhatsApp or by email.' image={imagery.detectionWide} imageAlt='Commercial fire detection system'/>
     <section className='section quote-section'><div className='quote-panel'><div className='quote-copy'><div className='eyebrow dark'>FAST ROUTE TO SUPPORT</div><h2>One clear brief is enough to start.</h2><p>Share your facility need, scope or maintenance requirement. The enquiry is prepared for direct WhatsApp delivery.</p><div className='contact-box'><span>CONTACT</span><a href={'tel:' + phone}>{phone}</a><a href={'tel:' + phone2}>{phone2}</a><a href={'mailto:' + email}>{email}</a></div></div>
       <form onSubmit={submit} className='quote-form'><div className='form-grid'>{['name','company','phone','email'].map((n,i)=><label key={n}>{['Name','Company / facility','Phone / WhatsApp','Email'][i]}<input required={n==='name'||n==='phone'} type={n==='email'?'email':'text'} name={n} value={f[n]} onChange={update} placeholder={n==='name'?'Your name':n==='company'?'Company name':n==='phone'?'+91...':'you@company.com'}/></label>)}</div><label>Requirement<select name='need' value={f.need} onChange={update}>{['AMC support','Detection Systems','Protection Systems','Passive Fire Protection','Site consultation','Other'].map(x=><option key={x}>{x}</option>)}</select></label><label>Details<textarea name='message' value={f.message} onChange={update} placeholder='Tell us about the facility, scope or requirement...'/></label><div className='form-actions'><button className='primary' type='submit'><MessageCircle size={17}/>Send to WhatsApp</button><a className='outline' href={mail}><Mail size={17}/>Send by email</a></div>{sent&&<div className='success'>Your enquiry has been prepared for WhatsApp.</div>}</form></div></section>
   </main>;
 }
 
 function Contact() {
-  return <main><PageHero eyebrow='07 - CONTACT & REACH' title='One conversation, a clear route to support.' text='Emergency contact, email and location details from the supplied company information.'/>
+  return <main><PageHero eyebrow='07 - CONTACT & REACH' title='One conversation, a clear route to support.' text='Emergency contact, email and location details from the supplied company information.' image={imagery.facility} imageAlt='Industrial facility protected by engineered fire safety systems'/>
     <section className='section contact'><div className='contact-grid'><div className='contact-card'><Phone/><span>EMERGENCY / 24/7</span><a href={'tel:' + phone}>{phone}</a><a href={'tel:' + phone2}>{phone2}</a></div><div className='contact-card'><Mail/><span>EMAIL</span><a href={'mailto:' + email}>{email}</a></div><div className='contact-card'><MapPin/><span>OFFICE</span><p>{address}</p><a href='https://www.google.com/maps/search/?api=1&query=27%20Nityananda%20Nagar%20Howrah%2071109' target='_blank' rel='noreferrer'>Open map <ExternalLink size={14}/></a></div></div><div className='map'><iframe title='Howrah office map' src='https://www.openstreetmap.org/export/embed.html?bbox=88.29%2C22.56%2C88.38%2C22.64&layer=mapnik&marker=22.595%2C88.34' loading='lazy'/></div></section>
-    <section className='section'><CTA/></section>
+    <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>FIELD SUPPORT</div><h2>Built for facilities that need a direct response.</h2></div><p>From detection to protection and inspection, the support route stays close to the physical systems on site.</p></div><ImageGallery items={[{src:imagery.facility,alt:'Industrial fire protection facility'},{src:imagery.detectionWide,alt:'Fire alarm detection system'},{src:imagery.inspection,alt:'Fire safety engineer inspection'}]}/></section>
+     <section className='section'><CTA/></section>
   </main>;
 }
 
