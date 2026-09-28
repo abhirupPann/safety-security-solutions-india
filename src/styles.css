@@ -7,3 +7,11 @@
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important}.motion-reveal{opacity:1!important;transform:none!important;transition:none!important}.media-frame img,.service,.resource,.client,.system,.primary,.navcta{transition:none!important}}
 
 .chat-messages{display:flex;flex-direction:column;gap:9px;max-height:260px;overflow:auto;padding-right:2px}.chat-message{max-width:88%;align-self:flex-start;background:var(--paper);padding:10px 12px;border-radius:13px;color:#4f647c;font-size:14px;line-height:1.45}.chat-message.user{align-self:flex-end;background:var(--blue);color:#fff}.quick button{border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff;text-align:center;color:var(--blue);font-weight:700;font-size:13px}.chat-compose{display:flex;gap:8px;margin-top:12px}.chat-compose input{min-width:0;padding:11px 12px;border-radius:12px}.chat-compose button{width:44px;min-width:44px;border:0;border-radius:12px;background:var(--blue);color:#fff;display:grid;place-items:center}.map-actions{display:flex;justify-content:flex-end;margin-top:12px}.map-actions .outline{color:var(--blue);border-color:var(--line)}.three-canvas[data-three-fallback='true']{background:radial-gradient(circle at 50% 45%,rgba(112,199,255,.12),transparent 45%)}
+
+
+/* Hard containment for WebGL scenes: the canvas must never affect document flow. */
+html, body, #root { max-width: 100%; overflow-x: clip; }
+.three-canvas { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; min-width: 0 !important; min-height: 0 !important; max-width: 100% !important; max-height: 100% !important; overflow: hidden !important; display: block; contain: layout paint size; pointer-events: none; }
+.three-canvas canvas { display: block !important; width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; }
+.system-feature .three-canvas { min-height: 270px !important; }
+.page-hero-art, .hero-art, .system-3d { overflow: hidden !important; }
