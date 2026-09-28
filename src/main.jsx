@@ -241,5 +241,22 @@ function Feature({icon: Icon, title, text}) { return <article className='feature
 function CTA() { return <div className='cta-section'><div><div className='eyebrow dark'>NEXT STEP</div><h2>Discuss the requirement.</h2><p>Route a service, system or maintenance request directly to the company.</p></div><Link className='primary' to='/quote'>Request a Quote <ArrowRight size={17}/></Link></div>; }
 function Footer() { return <footer><Logo/><div className='footer-links'><Link to='/services'>Services</Link><Link to='/systems'>Systems</Link><Link to='/clients'>Clients</Link><Link to='/resources'>Resources</Link><Link to='/about'>About</Link><Link to='/contact'>Contact</Link></div><div className='footer-bottom'><span>Copyright {new Date().getFullYear()} Safety &amp; Security Solutions</span><span>{address}</span></div></footer>; }
 
-function App() { return <BrowserRouter><Layout><Routes><Route path='/' element={<Home/>}/><Route path='/services' element={<Services/>}/><Route path='/systems' element={<Systems/>}/><Route path='/clients' element={<Clients/>}/><Route path='/resources' element={<Resources/>}/><Route path='/about' element={<About/>}/><Route path='/quote' element={<Quote/>}/><Route path='/contact' element={<Contact/>}/><Route path='*' element={<Home/>}/></Routes></Layout></BrowserRouter>; }
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error) {
+    console.error('Page rendering error:', error);
+  }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return <main><section className='section' style={{ minHeight: '55vh', display: 'grid', placeItems: 'center', textAlign: 'center' }}><div><div className='eyebrow dark'>TEMPORARY RENDERING ERROR</div><h1 style={{ fontSize: 'clamp(42px, 6vw, 72px)', margin: '20px 0' }}>This page could not be rendered.</h1><p style={{ color: 'var(--muted)', maxWidth: 650, margin: '0 auto 24px' }}>The rest of the site is still available. Reload the page to retry the current route.</p><button className='primary' type='button' onClick={() => window.location.reload()}>Reload page <ArrowRight size={17}/></button></div></section></main>;
+  }
+}
+
+function App() { return <BrowserRouter><Layout><AppErrorBoundary><Routes><Route path='/' element={<Home/>}/><Route path='/services' element={<Services/>}/><Route path='/systems' element={<Systems/>}/><Route path='/clients' element={<Clients/>}/><Route path='/resources' element={<Resources/>}/><Route path='/about' element={<About/>}/><Route path='/quote' element={<Quote/>}/><Route path='/contact' element={<Contact/>}/><Route path='*' element={<Home/>}/></Routes></AppErrorBoundary></Layout></BrowserRouter>; }
 createRoot(document.getElementById('root')).render(<App/>);
