@@ -44,6 +44,24 @@ const clientMarks = {
   'Shantinath Detergents': 'https://shreemaamultichem.com/wp-content/uploads/2023/12/Shantinath-Detergents-Pvt-Ltd.jpg'
 };
 
+const clientMonogram = name => {
+  const words = name
+    .replace(/[^A-Za-z0-9]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter(word => !['the', 'ltd', 'limited', 'pvt', 'private', 'plc', 'llp', 'foundation', 'centre', 'school', 'jv'].includes(word.toLowerCase()));
+  return words.slice(0, 2).map(word => word[0].toUpperCase()).join('') || name.slice(0, 2).toUpperCase();
+};
+
+function ClientMark({ name, src }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) {
+    return <div className='client-mark-fallback' aria-label={`${name} visual mark`}>{clientMonogram(name)}</div>;
+  }
+  return <img src={src} alt={`${name} logo`} loading='lazy' onError={() => setFailed(true)}/>;
+}
+
 const clients = [
   'Albert David Ltd.', 'Siddha Real Estate', 'Dr. S.S. Chatterjee Heart Centre',
   'Indian Space Research Organisation', 'Indira Cinema, Kolkata', 'ETA Engineering Private Limited',
@@ -199,7 +217,7 @@ function Systems() {
 
 function Clients() {
   return <main><PageHero eyebrow='03 - CLIENT PORTFOLIO' title='Trusted across varied facilities.' text='Client names reproduced from the supplied company profile. Visual marks are shown only where a relevant web result was found.' image={imagery.facility} imageAlt='Fire protection engineering inspection in an industrial facility' variant='clients'/>
-    <section className='section'><div className='client-grid'>{clients.map((c, i) => <Motion key={c} delay={(i % 5) * 45}><div className='client'><div className='client-logo-slot'>{clientMarks[c] ? <img src={clientMarks[c]} alt={`${c} logo`} loading='lazy' onError={e => { e.currentTarget.style.display = 'none'; }}/> : null}</div><div className='client-meta'><span>{String(i + 1).padStart(2, '0')}</span><b>{c}</b></div></div></Motion>)}</div></section>
+    <section className='section'><div className='client-grid'>{clients.map((c, i) => <Motion key={c} delay={(i % 5) * 45}><div className='client'><div className='client-logo-slot'><ClientMark name={c} src={clientMarks[c]}/></div><div className='client-meta'><span>{String(i + 1).padStart(2, '0')}</span><b>{c}</b></div></div></Motion>)}</div></section>
     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>PROJECT ENVIRONMENTS</div><h2>Safety engineering across different facility types.</h2></div><p>The supplied client list spans healthcare, infrastructure, education, industrial and commercial environments.</p></div><ImageGallery items={[{src: imagery.facility, alt: 'Industrial facility fire protection inspection'}, {src: imagery.sprinkler, alt: 'Industrial fire sprinkler installation'}, {src: imagery.inspection, alt: 'Fire safety engineering inspection'}]}/></section>
   </main>;
 }
