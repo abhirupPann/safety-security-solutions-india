@@ -14,3 +14,5 @@ html, body, #root { max-width: 100%; overflow-x: clip; }
 .system-feature .three-canvas { min-height: 270px !important; }
 .page-hero-art, .hero-art, .system-3d { overflow: hidden !important; }
 
+
+.quote-form button:disabled{opacity:.55;cursor:wait;transform:none!important;box-shadow:none!important}

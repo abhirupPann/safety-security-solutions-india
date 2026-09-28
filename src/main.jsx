@@ -62,6 +62,35 @@ function ClientMark({ name, src }) {
   return <img src={src} alt={`${name} logo`} loading='lazy' onError={() => setFailed(true)}/>;
 }
 
+const countryCodes = [
+  ['+91', 'India (+91)'], ['+1', 'United States / Canada (+1)'], ['+44', 'United Kingdom (+44)'],
+  ['+61', 'Australia (+61)'], ['+64', 'New Zealand (+64)'], ['+65', 'Singapore (+65)'],
+  ['+971', 'United Arab Emirates (+971)'], ['+966', 'Saudi Arabia (+966)'], ['+974', 'Qatar (+974)'],
+  ['+968', 'Oman (+968)'], ['+973', 'Bahrain (+973)'], ['+92', 'Pakistan (+92)'],
+  ['+880', 'Bangladesh (+880)'], ['+94', 'Sri Lanka (+94)'], ['+86', 'China (+86)'],
+  ['+81', 'Japan (+81)'], ['+82', 'South Korea (+82)'], ['+49', 'Germany (+49)'],
+  ['+33', 'France (+33)'], ['+39', 'Italy (+39)'], ['+34', 'Spain (+34)'],
+  ['+31', 'Netherlands (+31)'], ['+41', 'Switzerland (+41)'], ['+7', 'Russia / Kazakhstan (+7)'],
+  ['+27', 'South Africa (+27)'], ['+55', 'Brazil (+55)'], ['+52', 'Mexico (+52)'],
+  ['+234', 'Nigeria (+234)'], ['+254', 'Kenya (+254)']
+];
+
+const clientWebsites = {
+  'Albert David Ltd.': 'https://www.albertdavidindia.com/',
+  'Siddha Real Estate': 'https://www.siddhagroup.com/',
+  'Indian Space Research Organisation': 'https://www.isro.gov.in/',
+  'Indira Cinema, Kolkata': 'https://indiracinema.com/',
+  'ETA Engineering Private Limited': 'https://www.eta-engg.com/',
+  'AFCONS': 'https://afcons.com/',
+  'IITD (JV)': 'https://home.iitd.ac.in/',
+  'Shree Sai Infrastructure Development': 'https://shreesaideveloper.com/',
+  'ANJ Turnkey Projects PVT. LTD': 'https://anj.co.in/',
+  'The Future Foundation School': 'https://www.sriaurobindoinstitute.org/saioc/educational/tffs',
+  'Altamira Projects LLP': 'https://www.dragroup.in/altamira/',
+  'GKW Limited': 'https://www.gkwltd.com/',
+  'Shantinath Detergents': 'https://shantinathdetergents.com/'
+};
+
 const clients = [
   'Albert David Ltd.', 'Siddha Real Estate', 'Dr. S.S. Chatterjee Heart Centre',
   'Indian Space Research Organisation', 'Indira Cinema, Kolkata', 'ETA Engineering Private Limited',
@@ -216,8 +245,15 @@ function Systems() {
 }
 
 function Clients() {
+  const handleUnavailable = name => {
+    window.alert(`Official website not available for ${name}.`);
+  };
   return <main><PageHero eyebrow='03 - CLIENT PORTFOLIO' title='Trusted across varied facilities.' text='Client names reproduced from the supplied company profile. Visual marks are shown only where a relevant web result was found.' image={imagery.facility} imageAlt='Fire protection engineering inspection in an industrial facility' variant='clients'/>
-    <section className='section'><div className='client-grid'>{clients.map((c, i) => <Motion key={c} delay={(i % 5) * 45}><div className='client'><div className='client-logo-slot'><ClientMark name={c} src={clientMarks[c]}/></div><div className='client-meta'><span>{String(i + 1).padStart(2, '0')}</span><b>{c}</b></div></div></Motion>)}</div></section>
+    <section className='section'><div className='client-grid'>{clients.map((c, i) => {
+      const website = clientWebsites[c];
+      const card = <div className='client'><div className='client-logo-slot'><ClientMark name={c} src={clientMarks[c]}/></div><div className='client-meta'><span>{String(i + 1).padStart(2, '0')}</span><b>{c}</b></div><div style={{marginTop:12,fontSize:12,fontWeight:700,color:website ? 'var(--blue)' : '#8a99aa'}}>{website ? 'Visit official website ↗' : 'Official website not available'}</div></div>;
+      return <Motion key={c} delay={(i % 5) * 45}>{website ? <a href={website} target='_blank' rel='noreferrer' aria-label={`Visit official website of ${c}`}>{card}</a> : <div role='button' tabIndex={0} onClick={() => handleUnavailable(c)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleUnavailable(c); } }} aria-label={`Official website not available for ${c}`}>{card}</div>}</Motion>;
+    })}</div></section>
     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>PROJECT ENVIRONMENTS</div><h2>Safety engineering across different facility types.</h2></div><p>The supplied client list spans healthcare, infrastructure, education, industrial and commercial environments.</p></div><ImageGallery items={[{src: imagery.facility, alt: 'Industrial facility fire protection inspection'}, {src: imagery.sprinkler, alt: 'Industrial fire sprinkler installation'}, {src: imagery.inspection, alt: 'Fire safety engineering inspection'}]}/></section>
   </main>;
 }
@@ -240,17 +276,102 @@ function About() {
 
 function Quote() {
   const [sent, setSent] = useState(false);
-  const [f, setF] = useState({name: '', company: '', phone: '', email: '', need: 'AMC support', message: ''});
-  const update = e => setF({...f, [e.target.name]: e.target.value});
-  const submit = e => { e.preventDefault(); setSent(true); const t = `Hello Safety & Security Solutions, I need a quotation.\nName: ${f.name}\nCompany: ${f.company}\nPhone: ${f.phone}\nEmail: ${f.email}\nRequirement: ${f.need}\nDetails: ${f.message}`; window.open(`${wa}?text=${encodeURIComponent(t)}`, '_blank'); };
-  const openGmail = () => {
-    const subject = 'Safety & Security Solutions Consultation';
-    const body = `Hello Safety & Security Solutions,\n\nI would like to request a quotation.\n\nName: ${f.name}\nCompany / Facility: ${f.company}\nPhone / WhatsApp: ${f.phone}\nEmail: ${f.email}\nRequirement: ${f.need}\nDetails: ${f.message || 'N/A'}\n\nThank you.`;
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+  const [errors, setErrors] = useState({});
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [emailStatus, setEmailStatus] = useState('');
+  const [f, setF] = useState({name: '', company: '', countryCode: '+91', phone: '', email: '', need: 'AMC support', message: ''});
+
+  const update = e => {
+    const {name, value} = e.target;
+    setF(prev => ({...prev, [name]: value}));
+    setErrors(prev => ({...prev, [name]: ''}));
+    if (name === 'email') setEmailStatus('');
   };
+
+  const basicEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  const verifyEmail = async value => {
+    if (!basicEmail.test(value.trim())) {
+      setEmailStatus('Please enter a valid email address.');
+      return false;
+    }
+    setCheckingEmail(true);
+    try {
+      const response = await fetch('/api/verify-email', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: value.trim()})});
+      const result = await response.json();
+      if (result.valid === false) {
+        setEmailStatus(result.message || 'This email domain does not appear to accept email.');
+        return false;
+      }
+      if (result.valid === true) {
+        setEmailStatus('Email domain verified.');
+        return true;
+      }
+      setEmailStatus(result.message || 'Email could not be fully verified.');
+      return true;
+    } catch {
+      setEmailStatus('Email format is valid, but live verification is temporarily unavailable.');
+      return true;
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
+
+  const validateForm = async () => {
+    const next = {};
+    const name = f.name.trim();
+    const company = f.company.trim();
+    const localPhone = f.phone.replace(/\D/g, '');
+    const emailValue = f.email.trim();
+    if (name.length < 2) next.name = 'Please enter your full name.';
+    if (company.length < 2) next.company = 'Please enter your company / facility name.';
+    if (localPhone.length < 7 || localPhone.length > 15) next.phone = 'Enter a valid phone number (7–15 digits).';
+    if (!basicEmail.test(emailValue)) next.email = 'Enter a valid email address.';
+    if (!f.message.trim()) next.message = 'Please add a short description of your requirement.';
+    setErrors(next);
+    if (Object.keys(next).length) return false;
+    return await verifyEmail(emailValue);
+  };
+
+  const buildText = () => `Hello Safety & Security Solutions, I need a quotation.\nName: ${f.name.trim()}\nCompany: ${f.company.trim()}\nPhone: ${f.countryCode} ${f.phone.replace(/\D/g, '')}\nEmail: ${f.email.trim()}\nRequirement: ${f.need}\nDetails: ${f.message.trim()}`;
+
+  const submit = async e => {
+    e.preventDefault();
+    setSent(false);
+    const popup = window.open('about:blank', '_blank');
+    const valid = await validateForm();
+    if (!valid) { if (popup) popup.close(); return; }
+    setSent(true);
+    const target = `${wa}?text=${encodeURIComponent(buildText())}`;
+    if (popup) popup.location.href = target; else window.location.href = target;
+  };
+
+  const openGmail = async () => {
+    setSent(false);
+    const popup = window.open('about:blank', '_blank');
+    const valid = await validateForm();
+    if (!valid) { if (popup) popup.close(); return; }
+    const subject = 'Safety & Security Solutions Consultation';
+    const body = `Hello Safety & Security Solutions,\n\nI would like to request a quotation.\n\nName: ${f.name.trim()}\nCompany / Facility: ${f.company.trim()}\nPhone / WhatsApp: ${f.countryCode} ${f.phone.replace(/\D/g, '')}\nEmail: ${f.email.trim()}\nRequirement: ${f.need}\nDetails: ${f.message.trim()}\n\nThank you.`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (popup) popup.location.href = gmailUrl; else window.location.href = gmailUrl;
+  };
+
+  const fieldError = name => errors[name] ? <span style={{color:'#c92f3b',fontSize:12,fontWeight:600}}>{errors[name]}</span> : null;
+
   return <main><PageHero eyebrow='06 - REQUEST A QUOTE / CONSULTATION' title='Tell us what your facility needs.' text='Choose the requirement, add a few details and send the enquiry directly to the company on WhatsApp or by email.' image={imagery.detectionWide} imageAlt='Commercial fire detection system' variant='quote'/>
-    <section className='section quote-section'><div className='quote-panel'><div className='quote-copy'><div className='eyebrow dark'>FAST ROUTE TO SUPPORT</div><h2>One clear brief is enough to start.</h2><p>Share your facility need, scope or maintenance requirement. The enquiry is prepared for direct WhatsApp delivery.</p><div className='contact-box'><span>CONTACT</span><a href={'tel:' + phone}>{phone}</a><a href={'tel:' + phone2}>{phone2}</a><a href={'mailto:' + email}>{email}</a></div></div><form onSubmit={submit} className='quote-form'><div className='form-grid'>{['name','company','phone','email'].map((n, i) => <label key={n}>{['Name', 'Company / facility', 'Phone / WhatsApp', 'Email'][i]}<input required={n === 'name' || n === 'phone'} type={n === 'email' ? 'email' : 'text'} name={n} value={f[n]} onChange={update} placeholder={n === 'name' ? 'Your name' : n === 'company' ? 'Company name' : n === 'phone' ? '+91...' : 'you@company.com'}/></label>)}</div><label>Requirement<select name='need' value={f.need} onChange={update}>{['AMC support', 'Detection Systems', 'Protection Systems', 'Passive Fire Protection', 'Site consultation', 'Other'].map(x => <option key={x}>{x}</option>)}</select></label><label>Details<textarea name='message' value={f.message} onChange={update} placeholder='Tell us about the facility, scope or requirement...'/></label><div className='form-actions'><button className='primary' type='submit'><MessageCircle size={17}/>Send to WhatsApp</button><button className='outline' type='button' onClick={openGmail}><Mail size={17}/>Send by email</button></div>{sent && <div className='success'>Your enquiry has been prepared for WhatsApp.</div>}</form></div></section>
+    <section className='section quote-section'><div className='quote-panel'><div className='quote-copy'><div className='eyebrow dark'>FAST ROUTE TO SUPPORT</div><h2>One clear brief is enough to start.</h2><p>Share your facility need, scope or maintenance requirement. The enquiry is prepared for direct WhatsApp delivery.</p><div className='contact-box'><span>CONTACT</span><a href={'tel:' + phone}>{phone}</a><a href={'tel:' + phone2}>{phone2}</a><a href={'mailto:' + email}>{email}</a></div></div><form onSubmit={submit} className='quote-form' noValidate>
+      <div className='form-grid'>
+        <label>Name<input required type='text' name='name' value={f.name} onChange={update} placeholder='Your name' autoComplete='name'/>{fieldError('name')}</label>
+        <label>Company / facility<input required type='text' name='company' value={f.company} onChange={update} placeholder='Company name' autoComplete='organization'/>{fieldError('company')}</label>
+        <label>Phone / WhatsApp<div style={{display:'grid',gridTemplateColumns:'minmax(150px, .9fr) 1.1fr',gap:8}}><select name='countryCode' value={f.countryCode} onChange={update} aria-label='Country calling code'>{countryCodes.map(([code,label]) => <option value={code} key={code}>{label}</option>)}</select><input required type='tel' inputMode='tel' name='phone' value={f.phone} onChange={update} placeholder='9432223543' autoComplete='tel-national'/></div>{fieldError('phone')}</label>
+        <label>Email<input required type='email' name='email' value={f.email} onChange={update} onBlur={() => { if (f.email.trim()) verifyEmail(f.email); }} placeholder='you@company.com' autoComplete='email'/>{fieldError('email')}{emailStatus && <span style={{color: emailStatus === 'Email domain verified.' ? '#167b4d' : '#8a6a16',fontSize:12,fontWeight:600}}>{checkingEmail ? 'Checking email domain…' : emailStatus}</span>}</label>
+      </div>
+      <label>Requirement<select name='need' value={f.need} onChange={update}>{['AMC support', 'Detection Systems', 'Protection Systems', 'Passive Fire Protection', 'Site consultation', 'Other'].map(x => <option key={x}>{x}</option>)}</select></label>
+      <label>Details<textarea name='message' value={f.message} onChange={update} placeholder='Tell us about the facility, scope or requirement...' />{fieldError('message')}</label>
+      <div className='form-actions'><button className='primary' type='submit' disabled={checkingEmail}><MessageCircle size={17}/>Send to WhatsApp</button><button className='outline' type='button' onClick={openGmail} disabled={checkingEmail}><Mail size={17}/>Send by email</button></div>
+      {sent && <div className='success'>Your enquiry has been prepared for WhatsApp.</div>}
+    </form></div></section>
     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>WHAT TO INCLUDE</div><h2>Give the team enough context to respond quickly.</h2></div><p>Facility type, system requirement, AMC scope, site location and any existing system information can all help.</p></div><ImageGallery items={[{src: imagery.detectionWide, alt: 'Fire detection system'}, {src: imagery.sprinkler, alt: 'Fire protection system'}, {src: imagery.facility, alt: 'Industrial facility fire safety'}]}/></section>
   </main>;
 }
