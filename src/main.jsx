@@ -21,14 +21,13 @@ const imagery = {
   detectionWide: 'https://americanalarm.net/wp-content/uploads/2026/01/understanding-the-critical-differences-commercial-fire-alarm-systems-vs.-residential-alarms-1030x562.jpg',
   sprinkler: 'https://www.fireline.com/wp-content/uploads/2025/03/fireline-designing-fire-protection-systems-industrial-facilities.jpg',
   passive: 'https://images.squarespace-cdn.com/content/v1/55c9748de4b04eba92967c83/1541303155409-IW18K7KK5Q6T44XRGH6X/Fig1-passive-fire-protection.jpg',
-  inspection: 'https://dgconsultants.co.in/wp-content/uploads/2025/03/engineer-checking-industrial-fire-control-system-scaled.jpg',
+  inspection: 'https://www.fireline.com/wp-content/uploads/2024/09/fireline-fire-protection-system-inspection.jpg',
   facility: 'https://www.envistaforensics.com/media/15ibn4u4/fire-protection-engineer-analyzing-machinery.jpeg?anchor=center&mode=crop&width=1400&height=850&rnd=132713030943270000&format=webp&quality=82'
 };
 
 const verifiedClientMarks = {
   'Albert David Ltd.': 'https://albertdavidindia.com/images/logo.png',
   'Siddha Real Estate': 'https://siddhagroup.com/images/siddha-group-logo.png',
-  'Indian Space Research Organisation': 'https://www.presentations.gov.in/wp-content/uploads/2020/06/ISRO-Mock.png',
   'ETA Engineering Private Limited': 'https://www.eta-engg.com/images/ETA-Engineering-Logo.png',
   'ANJ Turnkey Projects PVT. LTD': 'https://www.anj.co.in/logos/brand.png',
   'The Future Foundation School': 'https://sriaurobindoschools.org/tffs/wp-content/uploads/2023/11/tffs-logo.png',
