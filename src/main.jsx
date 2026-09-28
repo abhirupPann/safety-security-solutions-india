@@ -15,6 +15,7 @@ const phone2 = '+919434362537';
 const email = 'fsssindia@gmail.com';
 const wa = 'https://wa.me/919432223543';
 const address = '27, Nityananda Nagar, P.O. D.S. Lane, Howrah - 711109';
+const googleMapsLocation = 'https://maps.app.goo.gl/RpTEa6ibPw1exdTeA';
 
 const imagery = {
   hero: 'https://kordfire.com/wp-content/uploads/2026/04/fire-protection-systems-for-industrial-facilities_featured.webp',
@@ -89,11 +90,37 @@ function Header() {
   </>;
 }
 
+function getAssistantReply(text) {
+  const q = text.toLowerCase().trim();
+  if (!q) return 'Please type your question. I can help with services, systems, quotations, AMC support, contact details and the office location.';
+  if (/hello|hi|hey|good morning|good afternoon|good evening/.test(q)) return 'Hello. I can help you understand Safety & Security Solutions, its fire-safety services, system types, support options and quotation process.';
+  if (/quote|quotation|estimate|price|cost|consult/.test(q)) return 'For a quotation or consultation, use the Request a Quote page. You can describe your facility, required system, AMC need or project scope and send the enquiry directly to the company via WhatsApp or email.';
+  if (/whatsapp|wa|phone|call|contact|number|emergency|24.?7/.test(q)) return `The 24/7 support numbers are ${phone} and ${phone2}. Email: ${email}. You can also use the WhatsApp button on this site.`;
+  if (/email|mail/.test(q)) return `The company email is ${email}. Use the Email section on the Contact page to start an enquiry.`;
+  if (/address|location|office|map|howrah|direction/.test(q)) return `The supplied office address is ${address}. The Contact page now links directly to the Google Maps location you provided.`;
+  if (/detection|alarm|smoke|fire alarm/.test(q)) return 'Detection services include conventional, addressable, addressable analogue and intelligent addressable analogue systems, along with CO2 and FM-200 solutions.';
+  if (/protection|sprinkler|hydrant|water mist|suppression/.test(q)) return 'Protection services include hydrant systems, automatic sprinklers, high- and medium-velocity water sprinkler systems and water-mist systems.';
+  if (/passive|fire.?check|sealing|smoke control|staircase|ahu/.test(q)) return 'Passive fire protection covers mechanical smoke control, sealing materials, fire-check doors, AHU tripping and staircase pressurization.';
+  if (/amc|maintenance|audit|inspection|service support/.test(q)) return 'AMC, maintenance, inspection and audit-related enquiries can be routed through the Request a Quote or Contact pages. The Resources and About sections also describe the planned maintenance-record and audit-report workflow.';
+  if (/system|fm.?200|co2|clean agent/.test(q)) return 'The system catalogue covers Fire Detection & Alarm, Hydrant Systems, Automatic Sprinkler, Water Mist, CO2 Flooding, FM-200 Flooding, Smoke Control, Fire Check Doors, Sealing Materials and Staircase Pressurization.';
+  if (/client|customer|portfolio/.test(q)) return 'The Clients page contains the client names supplied for the company profile. Logos are shown only where a relevant visual reference was available.';
+  if (/about|company|incorporated|india/.test(q)) return 'The supplied company profile states that the business was incorporated in 2015 and provides fire, life and asset protection solutions with technical support and customized engineering across India.';
+  return 'I can answer questions about the company, fire detection, protection systems, passive fire protection, AMC support, quotations, contacts, clients and the office location. Try asking: “What detection systems do you provide?”';
+}
+
 function FloatingTools() {
   const [chat, setChat] = useState(false);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([{ role: 'assistant', text: 'Hello. I can answer questions about our services, systems, quotation process, support contacts and company information.' }]);
+  const send = () => {
+    const value = input.trim();
+    if (!value) return;
+    setMessages(prev => [...prev, { role: 'user', text: value }, { role: 'assistant', text: getAssistantReply(value) }]);
+    setInput('');
+  };
   return <>
     <div className='floating'><a className='float wa' href={wa} target='_blank' rel='noreferrer' aria-label='WhatsApp'><MessageCircle/><span>WhatsApp</span></a><button className='float chat-btn' onClick={() => setChat(!chat)} aria-label='Open live chat'><MessageCircle/><span>Live chat</span></button></div>
-    {chat && <div className='chat'><div className='chat-head'><div><b>SSS Assistant</b><small>Company information and enquiry help</small></div><button onClick={() => setChat(false)}><X size={17}/></button></div><div className='chat-body'><div className='bubble'>I can help with services, systems, quotation requests, support contacts and company information.</div><div className='quick'><Link to='/services' onClick={() => setChat(false)}>Services</Link><Link to='/systems' onClick={() => setChat(false)}>Systems</Link><Link to='/quote' onClick={() => setChat(false)}>Get a quote</Link><Link to='/contact' onClick={() => setChat(false)}>Contact</Link></div></div></div>}
+    {chat && <div className='chat'><div className='chat-head'><div><b>SSS Assistant</b><small>Company information and enquiry help</small></div><button onClick={() => setChat(false)}><X size={17}/></button></div><div className='chat-body'><div className='chat-messages'>{messages.map((m, i) => <div key={i} className={`chat-message ${m.role === 'user' ? 'user' : ''}`}>{m.text}</div>)}</div><div className='quick'><button type='button' onClick={() => { setInput('What detection systems do you provide?'); }}>Detection</button><button type='button' onClick={() => { setInput('I need a quotation'); }}>Get a quote</button><button type='button' onClick={() => { setInput('What AMC support is available?'); }}>AMC support</button><button type='button' onClick={() => { setInput('What is the office address?'); }}>Office</button></div><div className='chat-compose'><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }} placeholder='Ask about the company...' aria-label='Ask the company assistant'/><button type='button' onClick={send} aria-label='Send message'><ArrowRight size={17}/></button></div></div></div>}
   </>;
 }
 
@@ -205,7 +232,7 @@ function Quote() {
 
 function Contact() {
   return <main><PageHero eyebrow='07 - CONTACT & REACH' title='One conversation, a clear route to support.' text='Emergency contact, email and location details from the supplied company information.' image={imagery.facility} imageAlt='Industrial facility protected by engineered fire safety systems' variant='contact'/>
-    <section className='section contact'><div className='contact-grid'><div className='contact-card'><Phone/><span>EMERGENCY / 24/7</span><a href={'tel:' + phone}>{phone}</a><a href={'tel:' + phone2}>{phone2}</a></div><div className='contact-card'><Mail/><span>EMAIL</span><a href={'mailto:' + email}>{email}</a></div><div className='contact-card'><MapPin/><span>OFFICE</span><p>{address}</p><a href='https://www.google.com/maps/search/?api=1&query=27%20Nityananda%20Nagar%20Howrah%2071109' target='_blank' rel='noreferrer'>Open map <ExternalLink size={14}/></a></div></div><div className='map'><iframe title='Howrah office map' src='https://www.openstreetmap.org/export/embed.html?bbox=88.29%2C22.56%2C88.38%2C22.64&layer=mapnik&marker=22.595%2C88.34' loading='lazy'/></div></section>
+    <section className='section contact'><div className='contact-grid'><div className='contact-card'><Phone/><span>EMERGENCY / 24/7</span><a href={'tel:' + phone}>{phone}</a><a href={'tel:' + phone2}>{phone2}</a></div><div className='contact-card'><Mail/><span>EMAIL</span><a href={'mailto:' + email}>{email}</a></div><div className='contact-card'><MapPin/><span>OFFICE</span><p>{address}</p><a href='https://www.google.com/maps/search/?api=1&query=27%20Nityananda%20Nagar%20Howrah%2071109' target='_blank' rel='noreferrer'>Open map <ExternalLink size={14}/></a></div></div><div className='map'><iframe title='Safety and Security Solutions office map' src='https://www.google.com/maps?q=27%20Nityananda%20Nagar%2C%20P.O.%20D.S.%20Lane%2C%20Howrah%2071109&output=embed' loading='lazy' referrerPolicy='no-referrer-when-downgrade'/></div><div className='map-actions'><a className='outline' href={googleMapsLocation} target='_blank' rel='noreferrer'>Open exact Google Maps location <ExternalLink size={15}/></a></div></section>
     <section className='section image-section'><div className='section-head'><div><div className='eyebrow dark'>FIELD SUPPORT</div><h2>Built for facilities that need a direct response.</h2></div><p>From detection to protection and inspection, the support route stays close to the physical systems on site.</p></div><ImageGallery items={[{src: imagery.facility, alt: 'Industrial fire protection facility'}, {src: imagery.detectionWide, alt: 'Fire alarm detection system'}, {src: imagery.inspection, alt: 'Fire safety engineering inspection'}]}/></section><section className='section'><CTA/></section>
   </main>;
 }
