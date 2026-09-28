@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -6,6 +6,7 @@ import {
   MessageCircle, Menu, X, ChevronRight, BookOpen, Building2, Clock3,
   ExternalLink, ClipboardCheck, Wrench, FileText, Headphones
 } from 'lucide-react';
+import ProtectionScene from './ProtectionScene.jsx';
 import './styles.css';
 
 const phone = '+919432223543';
@@ -118,8 +119,35 @@ function FloatingTools() {
   </>;
 }
 
+
+function Motion({ children, className='', delay=0 }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { node.classList.add('motion-visible'); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        node.style.setProperty('--motion-delay', `${delay}ms`);
+        node.classList.add('motion-visible');
+        observer.disconnect();
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px' });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [delay]);
+  return <div ref={ref} className={`motion-reveal ${className}`}>{children}</div>;
+}
+
+function MotionPage({ children }) {
+  const location = useLocation();
+  useEffect(() => window.scrollTo({ top: 0, behavior: 'instant' }), [location.pathname]);
+  return <div className='route-motion'>{children}</div>;
+}
+
 function Layout({ children }) {
-  return <div><Header/>{children}<Footer/><FloatingTools/></div>;
+  return <div><Header/><MotionPage>{children}</MotionPage><Footer/><FloatingTools/></div>;
 }
 
 function PageHero({ eyebrow, title, text, image=imagery.facility, imageAlt='Fire safety engineering at an industrial facility' }) {
@@ -138,13 +166,13 @@ function Home() {
         <div className='actions'><Link className='primary' to='/quote'>Talk to an Expert <ArrowRight size={17}/></Link><a className='secondary' href={'tel:' + phone}><Phone size={16}/>24/7 Support</a></div>
         <div className='hero-note'><ShieldCheck size={18}/>Incorporated in 2015 - Serving clients across India</div>
       </div>
-      <div className='hero-art'><MediaFrame src={imagery.hero} alt='Industrial fire protection systems' className='hero-photo'/><div className='grid'/><div className='art-card main'><div className='pulse'><span/></div><small>PROTECTION STACK</small><strong>Detect - Protect - Preserve</strong><p>Systems engineered around the risk, facility and response requirement.</p></div><div className='art-card mini one'>24/7<br/><b>Support</b></div><div className='art-card mini two'>10+<br/><b>System types</b></div></div>
+      <div className='hero-art'><ProtectionScene className='hero-3d' /><MediaFrame src={imagery.hero} alt='Industrial fire protection systems' className='hero-photo'/><div className='grid'/><div className='art-card main'><div className='pulse'><span/></div><small>PROTECTION STACK</small><strong>Detect - Protect - Preserve</strong><p>Systems engineered around the risk, facility and response requirement.</p></div><div className='art-card mini one'>24/7<br/><b>Support</b></div><div className='art-card mini two'>10+<br/><b>System types</b></div></div>
     </section>
     <div className='trust'><span>ENGINEERED FOR FACILITIES</span><i/><span>FIRE - LIFE - ASSET PROTECTION</span><i/><span>TECHNICAL SUPPORT</span></div>
-    <section className='section'><div className='section-head'><div><div className='eyebrow dark'>01 - SERVICES DIRECTORY</div><h2>A complete fire-safety stack.</h2></div><p>From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.</p></div><div className='service-grid'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.detection:s.title==='Protection Systems'?imagery.sprinkler:imagery.passive} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
-    <section className='section dark-section'><div className='section-head'><div><div className='eyebrow'>02 - EQUIPMENT / SYSTEMS</div><h2>Specify the right system for the risk.</h2></div><p>Explore the solution families covered by the company profile. Product-level specifications can be added as the catalog is finalized.</p></div><div className='system-feature'><MediaFrame src={imagery.sprinkler} alt='Industrial fire sprinkler protection system'/><div><div className='eyebrow'>ENGINEERED PROTECTION</div><h3>Active systems designed around the facility.</h3><p>From detection and alarm through water-based and clean-agent protection, the system choice follows the risk and operational requirement.</p></div></div><div className='system-list'>{systems.map((s,i)=><Link to='/systems' className='system' key={s}><span>{String(i+1).padStart(2,'0')}</span><b>{s}</b><ChevronRight size={17}/></Link>)}</div></section>
+    <section className='section'><div className='section-head'><div><div className='eyebrow dark'>01 - SERVICES DIRECTORY</div><h2>A complete fire-safety stack.</h2></div><p>From early detection to active protection and passive containment, the service architecture is built to keep critical spaces safer.</p></div><div className='service-grid motion-stagger'>{services.map((s,i)=><article className='service' key={s.title}><MediaFrame src={s.title==='Detection Systems'?imagery.detection:s.title==='Protection Systems'?imagery.sprinkler:imagery.passive} alt={s.title} className='service-photo'/><div className='icon'><s.icon/></div><span>0{i+1}</span><h3>{s.title}</h3><p>{s.text}</p><Link to='/quote'>Discuss this system <ArrowRight size={15}/></Link></article>)}</div></section>
+    <section className='section dark-section'><div className='section-head'><div><div className='eyebrow'>02 - EQUIPMENT / SYSTEMS</div><h2>Specify the right system for the risk.</h2></div><p>Explore the solution families covered by the company profile. Product-level specifications can be added as the catalog is finalized.</p></div><div className='system-feature'><ProtectionScene className='system-3d' /><MediaFrame src={imagery.sprinkler} alt='Industrial fire sprinkler protection system'/><div><div className='eyebrow'>ENGINEERED PROTECTION</div><h3>Active systems designed around the facility.</h3><p>From detection and alarm through water-based and clean-agent protection, the system choice follows the risk and operational requirement.</p></div></div><div className='system-list motion-stagger'>{systems.map((s,i)=><Link to='/systems' className='system' key={s}><span>{String(i+1).padStart(2,'0')}</span><b>{s}</b><ChevronRight size={17}/></Link>)}</div></section>
     <section className='quote-band'><div><div className='eyebrow'>SAFETY PHILOSOPHY</div><blockquote>An ounce of prevention is worth a pound of cure.</blockquote><small>- Benjamin Franklin, 1735 · Fire-prevention maxim</small></div><ShieldCheck size={72}/></section>
-    <section className='section'><div className='section-head'><div><div className='eyebrow dark'>03 - SAFETY RESOURCES</div><h2>Useful knowledge for facility teams.</h2></div><p>Educational content can turn routine maintenance into a stronger safety practice.</p></div><div className='resource-grid'>{resources.map(([t,p],i)=><article className='resource' key={t}><div className='resource-no'>0{i+1}</div><BookOpen size={21}/><h3>{t}</h3><p>{p}</p><Link to='/resources'>Explore resource <ArrowRight size={15}/></Link></article>)}</div></section>
+    <section className='section'><div className='section-head'><div><div className='eyebrow dark'>03 - SAFETY RESOURCES</div><h2>Useful knowledge for facility teams.</h2></div><p>Educational content can turn routine maintenance into a stronger safety practice.</p></div><div className='resource-grid motion-stagger'>{resources.map(([t,p],i)=><article className='resource' key={t}><div className='resource-no'>0{i+1}</div><BookOpen size={21}/><h3>{t}</h3><p>{p}</p><Link to='/resources'>Explore resource <ArrowRight size={15}/></Link></article>)}</div></section>
     <section className='section cta-section'><div><div className='eyebrow dark'>READY WHEN YOU ARE</div><h2>Turn your requirement into a clear scope.</h2><p>Share your facility need and route it directly to the company for a consultation.</p></div><Link className='primary' to='/quote'>Request a Quote <ArrowRight size={17}/></Link></section>
   </main>;
 }
